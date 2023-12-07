@@ -155,11 +155,11 @@ func classify_part2(p *play) {
 	}
 }
 
-func get_special_char_part1(a rune) int {
+func get_special_char(a rune) int {
 	switch a {
 	case 'T':
 		return 0
-	case 'J':
+	case 'J': // part 2 handled earlier in good_compare
 		return 1
 	case 'Q':
 		return 2
@@ -172,70 +172,19 @@ func get_special_char_part1(a rune) int {
 	}
 }
 
-func get_special_char_part2(a rune) int {
-	switch a {
-	case 'T':
-		return 0
-	case 'Q':
-		return 2
-	case 'K':
-		return 3
-	case 'A':
-		return 4
-	default:
-		panic(1)
-	}
-}
-
-func good_compare_part1(a, b string) int {
+func good_compare(a, b string, part int) int {
 	for i := 0; i < len(a); i++ {
 		rune_a := rune(a[i])
 		rune_b := rune(b[i])
 
-		if unicode.IsNumber(rune_a) && unicode.IsNumber(rune_b) {
-			n_a, _ := strconv.Atoi(string(rune_a))
-			n_b, _ := strconv.Atoi(string(rune_b))
-
-			if n_a > n_b {
-				return -1
-			} else if n_a == n_b {
+		if part == 2 {
+			if (rune_a == 'J') && (rune_b == 'J') {
 				continue
-			} else {
+			} else if rune_a == 'J' {
 				return 1
-			}
-
-		} else if unicode.IsNumber(rune_a) {
-			return 1
-		} else if unicode.IsNumber(rune_b) {
-			return -1
-		} else {
-
-			t_a := get_special_char_part1(rune_a)
-			t_b := get_special_char_part1(rune_b)
-
-			if t_a > t_b {
+			} else if rune_b == 'J' {
 				return -1
-			} else if t_a == t_b {
-				continue
-			} else {
-				return 1
 			}
-		}
-	}
-	return 0
-}
-
-func good_compare_part2(a, b string) int {
-	for i := 0; i < len(a); i++ {
-		rune_a := rune(a[i])
-		rune_b := rune(b[i])
-
-		if (rune_a == 'J') && (rune_b == 'J') {
-			continue
-		} else if rune_a == 'J' {
-			return 1
-		} else if rune_b == 'J' {
-			return -1
 		}
 
 		if unicode.IsNumber(rune_a) && unicode.IsNumber(rune_b) {
@@ -256,8 +205,8 @@ func good_compare_part2(a, b string) int {
 			return -1
 		} else {
 
-			t_a := get_special_char_part2(rune_a)
-			t_b := get_special_char_part2(rune_b)
+			t_a := get_special_char(rune_a)
+			t_b := get_special_char(rune_b)
 
 			if t_a > t_b {
 				return -1
@@ -273,17 +222,15 @@ func good_compare_part2(a, b string) int {
 
 func part(input []string, part int) int {
 	total := 0
+	ordered_plays := make(map[hand_type][]play, 0)
 
-	plays := make([]play, 0)
 	for _, line := range input {
 		stuff := strings.Fields(line)
 		bid, _ := strconv.Atoi(stuff[1])
-		plays = append(plays, play{hand: stuff[0], bid: bid})
-	}
-
-	ordered_plays := make(map[hand_type][]play, 0)
-
-	for _, play := range plays {
+		play := play{
+			hand: stuff[0],
+			bid:  bid,
+		}
 		if part == 1 {
 			classify_part1(&play)
 		} else {
@@ -292,6 +239,7 @@ func part(input []string, part int) int {
 		ordered_plays[play.t] = append(ordered_plays[play.t], play)
 	}
 
+	// must be ordered
 	hands := []hand_type{
 		five,
 		four,
@@ -304,18 +252,10 @@ func part(input []string, part int) int {
 	rank := len(input)
 	for _, hand := range hands {
 
-		if part == 1 {
-			slices.SortFunc(ordered_plays[hand],
-				func(a, b play) int {
-					return good_compare_part1(a.hand, b.hand)
-				})
-
-		} else {
-			slices.SortFunc(ordered_plays[hand],
-				func(a, b play) int {
-					return good_compare_part2(a.hand, b.hand)
-				})
-		}
+		slices.SortFunc(ordered_plays[hand],
+			func(a, b play) int {
+				return good_compare(a.hand, b.hand, part)
+			})
 
 		for _, play := range ordered_plays[hand] {
 			total += (rank * play.bid)
