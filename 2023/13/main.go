@@ -77,7 +77,7 @@ func part1(input []string) int {
 						is_reflection = false
 					}
 				} else {
-					if !strings.HasPrefix(p[j][i:], rev_left_side[j][:len(p[j][i:])]) {
+					if !strings.HasPrefix(rev_left_side[j], p[j][i:]) {
 						is_reflection = false
 					}
 				}
@@ -115,12 +115,12 @@ func part1(input []string) int {
 				}
 
 				// handle reflection on the up being bigger than on the bottom
-				if len(p2_horizontal_line) > len(rev_up_side[j]) {
+				if len(p2_horizontal_line) >= len(rev_up_side[j]) {
 					if !strings.HasPrefix(p2_horizontal_line, rev_up_side[j]) {
 						is_reflection = false
 					}
 				} else {
-					if !strings.HasPrefix(p2_horizontal_line, rev_up_side[j][:len(p2_horizontal_line)]) {
+					if !strings.HasPrefix(rev_up_side[j], p2_horizontal_line) {
 						is_reflection = false
 					}
 				}
@@ -189,7 +189,7 @@ func part2(input []string) int {
 						}
 					}
 				} else {
-					if !strings.HasPrefix(p[j][i:], rev_left_side[j][:len(p[j][i:])]) {
+					if !strings.HasPrefix(rev_left_side[j], p[j][i:]) {
 						is_reflection = false
 						for z := 0;z<len(p[j][i:]);z++ {
 							if rev_left_side[j][z] != p[j][i:][z] {
@@ -242,7 +242,7 @@ func part2(input []string) int {
 						}
 					}
 				} else {
-					if !strings.HasPrefix(p2_horizontal_line, rev_up_side[j][:len(p2_horizontal_line)]) {
+					if !strings.HasPrefix(rev_up_side[j], p2_horizontal_line) {
 						is_reflection = false
 						for z := 0;z<len(p2_horizontal_line);z++ {
 							if rev_up_side[j][:len(p2_horizontal_line)][z] != p2_horizontal_line[z] {
