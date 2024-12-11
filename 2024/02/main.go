@@ -34,16 +34,25 @@ func part2(matrix [][]int) {
 	safeReports := 0
 	for _, line := range matrix {
 		if !verifyLine(line) {
+			fmt.Print(line, " not safe")
+			safeAfter := false
 			for i := range line {
 				newLine := make([]int, 0)
 				newLine = append(newLine, line[:i]...)
 				newLine = append(newLine, line[i+1:]...)
 				if verifyLine(newLine) {
+					safeAfter = true
 					safeReports += 1
 					break
 				}
 			}
+			if safeAfter {
+				fmt.Println(" but can be")
+			} else {
+				fmt.Println()
+			}
 		} else {
+			fmt.Println(line, "safe")
 			safeReports += 1
 		}
 	}
